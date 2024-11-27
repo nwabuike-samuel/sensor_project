@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anomaly Detection</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Real-Time Anomaly Detection</h1>
+    
+    <button id="start_button" class="button" onclick="startMQTT()">Start MQTT</button>
+    <button id="stop_button" class="button" onclick="stopMQTT()" disabled>Stop MQTT</button>
+    
+    <div>
+        <h2>Latest Data:</h2>
+        <pre id="data"></pre>
+    </div>
+    <div id="data-display">
+        <p>Loading data...</p>
+    </div>
+    
+    <script>
+        let intervalId = null;
+        function startMQTT() {
+            fetch('/start_mqtt')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        document.getElementById('start_button').disabled = true;
+                        document.getElementById('stop_button').disabled = false;
+                    }
+                    if (!intervalId) {
+                        intervalId = setInterval(fetchData, 90000);
+                        console.log("Data fetching started.");
+                    }
+                    alert(data.message);
+                })
+                .catch(error => alert('Error: ' + error));
+        }
+
+        function stopMQTT() {
+            fetch('/stop_mqtt')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        document.getElementById('start_button').disabled = false;
+                        document.getElementById('stop_button').disabled = true;
+                    }
+                    if (intervalId) {
+                        clearInterval(intervalId);
+                        intervalId = null;
+                        console.log("Data fetching stopped.");
+                    }
+                    alert(data.message);
+                })
+                .catch(error => alert('Error: ' + error));
+        }
+
+        function fetchData() {
+            fetch('/get_data')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Fetched data:", data);
+                    if (data.message) {
+                        document.getElementById('data-display').innerHTML = `<p>${data.message}</p>`;
+                    } else {
+                        const output = `
+                            <p><strong>Timestamp:</strong> ${data.timestamp ?? "N/A"}</p>
+                            <p><strong>Phase:</strong> ${data.phase ?? "N/A"}</p>
+                            <p><strong>Power:</strong> ${data.power ?? "N/A"}</p>
+                            <p><strong>THD:</strong> ${data.thd ?? "N/A"}</p>
+                            <p><strong>Shift:</strong> ${data.shift ?? "N/A"}</p>
+                            <p><strong>Voltage:</strong> ${data.voltage ?? "N/A"}</p>
+                            <p><strong>Frequency:</strong> ${data.frequency ?? "N/A"}</p>
+                            <p><strong>Anomaly:</strong> ${data.anomaly ? "Yes" : "No"}</p>
+                        `;
+                        document.getElementById('data-display').innerHTML = output;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    document.getElementById('data-display').innerHTML = `<p class="error">Error fetching data: ${error.message}</p>`;
+                });
+        }
+    </script>
+</body>
+</html>
