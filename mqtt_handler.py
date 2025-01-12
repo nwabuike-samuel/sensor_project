@@ -19,7 +19,7 @@ class MQTTHandler:
         
     def parse_message(self, payload):
         # relevant_features = ["phase", "power", "thd", "shift", "voltage", "frequency"]
-        if payload.startswith("raw"):
+        if payload.startswith("ml"):
             # Split into header and data based on the first space
             header_part, data_part = payload.split(" ", 1)
 
@@ -62,12 +62,12 @@ class MQTTHandler:
                     parsed_data[key] = value
 
             # Save parsed data to a file
-            with open("sensor_data.json", "a") as file:
+            with open("ml_sensor_data.json", "a") as file:
                 json.dump(parsed_data, file)  # Append parsed data in JSON format
                 file.write("\n")  # Add a newline for each entry
 
             print(f"Parsed Data: {parsed_data}")
-            print("Parsed Data saved to sensor_data.json")
+            print("Parsed Data saved to ml_sensor_data.json")
             return parsed_data
         else:
             raise ValueError("Invalid payload format")
@@ -81,11 +81,12 @@ class MQTTHandler:
             relevant_features = [
                 datetime.now().isoformat(),
                 parsed_data.get("phase"),
-                parsed_data.get("power"),
+                parsed_data.get("active"),
+                parsed_data.get("reactive"),
+                parsed_data.get("current"),
+                parsed_data.get("freq"),
                 parsed_data.get("thd"),
-                parsed_data.get("shift"),
                 parsed_data.get("voltage"),
-                parsed_data.get("frequency"),
             ]
 
             print("Relevant Parsed data:", relevant_features)
@@ -109,7 +110,7 @@ class MQTTHandler:
             # Save data and anomaly to CSV
             relevant_features.append(is_anomaly)
             data_manager.save_data(relevant_features)
-            self.retrain_counter += 1
+            # self.retrain_counter += 1
 
             print("Relevant Parsed data and detected anomaly:", relevant_features)
             
@@ -117,11 +118,12 @@ class MQTTHandler:
             self.latest_data = {
                 "timestamp": relevant_features[0],
                 "phase": relevant_features[1],
-                "power": relevant_features[2],
-                "thd": relevant_features[3],
-                "shift": relevant_features[4],
-                "voltage": relevant_features[5],
-                "frequency": relevant_features[6],
+                "active": relevant_features[2],
+                "reactive": relevant_features[3],
+                "current": relevant_features[4],
+                "frequency": relevant_features[5],
+                "thd": relevant_features[6],
+                "voltage": relevant_features[7],
                 "anomaly": bool(is_anomaly[0]),
             }
 
