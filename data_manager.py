@@ -56,7 +56,11 @@ class DataManager:
             except Exception as e:
                 raise ValueError(f"Error converting input data to DataFrame: {e}")
             
-        phase_data = data[data['phase'] == phase].drop(columns=['phase', 'sensor', 'event', 'lag'])
+        # phase_data = data[data['phase'] == phase].drop(columns=['phase', 'sensor', 'event', 'lag'])
+        phase_data = data[data["phase"] == phase]
+        features = ["active", "reactive", "current", "freq", "thd", "voltage"]
+        # Extract features and scale
+        phase_data = phase_data[features]
         if training:
             scaler = MinMaxScaler()
             scaled_data = scaler.fit_transform(phase_data)

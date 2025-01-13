@@ -3,7 +3,7 @@ import json
 
 def process_message(payload):
     relevant_features = ["phase", "power", "thd", "shift", "voltage", "frequency"]
-    if payload.startswith("raw"):
+    if payload.startswith("ml"):
         # Split into header and data based on the first space
         header_part, data_part = payload.split(" ", 1)
 
@@ -51,13 +51,13 @@ def process_message(payload):
             file.write("\n")  # Add a newline for each entry
 
         print(f"Parsed Data: {parsed_data}")
-    print("Data saved to sensor_data.json")
+    print("Data saved to ml_sensor_data.json")
 
 
 def on_message(client, userdata, message):
     # Decode the message payload
     payload = message.payload.decode('utf-8')
-    # print(payload)
+    print(payload)
     process_message(payload)
 
 def main():
@@ -68,7 +68,8 @@ def main():
     # Connect to the broker
     broker = "mqtt.watter.co.uk"
     port = 1883
-    topic = "aida/raw/997/#"
+    # topic = "aida/raw/997/#"
+    topic = "aida/ml/997/#"
     
     client.connect(broker, port)
     client.subscribe(topic)

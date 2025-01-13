@@ -20,4 +20,4 @@ RETRAIN_TRIGGER = 10000  # Retrain model after this many new rows
 # MQTT settings
 MQTT_BROKER = "mqtt.watter.co.uk"
 MQTT_PORT = 1883
-MQTT_TOPIC = "aida/raw/997/#"
+MQTT_TOPIC = "aida/ml/997/#"
