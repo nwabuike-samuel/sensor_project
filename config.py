@@ -15,7 +15,7 @@ MODEL_FILES = {phase: f"{MODEL_DIR}/autoencoder_phase_{phase}.h5" for phase in P
 BATCH_SIZE = 32
 EPOCHS = 50
 # THRESHOLD = 0.01  # Anomaly detection threshold
-RETRAIN_TRIGGER = 100  # Retrain model after this many new rows
+RETRAIN_TRIGGER = 10000  # Retrain model after this many new rows
 
 # MQTT settings
 MQTT_BROKER = "mqtt.watter.co.uk"

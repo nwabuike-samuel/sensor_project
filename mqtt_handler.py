@@ -132,9 +132,8 @@ class MQTTHandler:
             # Retrain model after reaching the retrain trigger
             if self.retrain_counter >= self.retrain_trigger:
                 self.retrain_counter = 0
-                df = self.data_manager.load_data()
-                features = df[["phase", "power", "thd", "shift", "voltage", "frequency"]].dropna().values
-                self.autoencoder.train(features, epochs=50, batch_size=32)
+                for phase, autoencoder in self.autoencoders.items():
+                    autoencoder.retrain()
         except ValueError as e:
             print(f"Error processing message: {e}")
 
