@@ -123,8 +123,8 @@ class Autoencoder:
         reconstructed_data = self.model.predict(data)
         reconstruction_error = ((data - reconstructed_data) ** 2).mean(axis=1)
         # Return True if the error exceeds a threshold (set your threshold)
-        threshold = np.percentile(reconstruction_error, 95)
-        # threshold = np.mean(reconstruction_error) + 3 * np.std(reconstruction_error)
+        # threshold = np.percentile(reconstruction_error, 95)
+        threshold = np.mean(reconstruction_error) + 3 * np.std(reconstruction_error)
         return reconstruction_error > threshold
 
     def retrain(self):

@@ -1,7 +1,7 @@
 # Configuration file
 
 # File paths
-CSV_FILE = "sensor_data.csv"
+CSV_FILE = "ml_sensor_data.csv"
 INITIAL_TRAINING_FILE = "initial_data.csv"
 SCALER_DIR = "scalers"  # Directory for storing phase-specific scaler files
 MODEL_DIR = "models"    # Directory for storing phase-specific model files
