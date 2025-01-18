@@ -58,7 +58,7 @@ def on_message(client, userdata, message):
     # Decode the message payload
     payload = message.payload.decode('utf-8')
     print(payload)
-    process_message(payload)
+    # process_message(payload)
 
 def main():
     # MQTT client setup

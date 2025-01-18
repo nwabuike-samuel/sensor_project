@@ -16,12 +16,20 @@ class DataManager:
         if not os.path.exists(self.csv_file):
             with open(self.csv_file, mode="w", newline="") as file:
                 writer = csv.writer(file)
-                writer.writerow(["timestamp", "phase", "power", "thd", "shift", "voltage", "frequency", "anomaly"])
+                # writer.writerow(["timestamp", "phase", "active", "reactive", "current", "freq", "thd", "voltage",
+                #                  "hm0", "hm1", "hm2", "hm3", "hm4", "hm5", "hm6", "hm7", "hm8",
+                #                  "tr_on0", "tr_on1", "tr_on2", "tr_on3", "tr_on4", "tr_on5", "tr_on6", "tr_on7", "tr_on8",
+                #                  "tr_off0","tr_off1","tr_off2","tr_off3","tr_off4","tr_off5","tr_off6","tr_off7","tr_off8", "anomaly"])
+                writer.writerow(["timestamp", "phase", "active", "reactive", "current", "freq", "thd", "voltage",
+                                 "hm0", "hm1", "hm2", "hm3", "hm4", "hm5", "hm6", "hm7", "hm8", "anomaly"])
         else:
             # Load data into memory only if the file exists
             self.data = pd.read_csv(self.csv_file)
 
     def save_data(self, row):
+        # Dynamically determine if headers are missing
+        if not os.path.exists(self.csv_file) or os.stat(self.csv_file).st_size == 0:
+            self.ensure_csv_exists()
         # Convert anomaly to a scalar if it's a NumPy array or list
         if isinstance(row[-1], (np.ndarray, list)):
             row[-1] = bool(row[-1][0])  # Convert to a Python boolean
@@ -58,7 +66,16 @@ class DataManager:
             
         # phase_data = data[data['phase'] == phase].drop(columns=['phase', 'sensor', 'event', 'lag'])
         phase_data = data[data["phase"] == phase]
-        features = ["active", "reactive", "current", "freq", "thd", "voltage"]
+        # features = [
+        #     "active", "reactive", "current", "freq", "thd", "voltage",
+        #     "hm0", "hm1", "hm2", "hm3", "hm4", "hm5", "hm6", "hm7", "hm8",
+        #     "tr_on0", "tr_on1", "tr_on2", "tr_on3", "tr_on4", "tr_on5", "tr_on6", "tr_on7", "tr_on8", 
+        #     "tr_off0","tr_off1","tr_off2","tr_off3","tr_off4","tr_off5","tr_off6","tr_off7","tr_off8"
+        # ]
+        features = [
+            "active", "reactive", "current", "freq", "thd", "voltage",
+            "hm0", "hm1", "hm2", "hm3", "hm4", "hm5", "hm6", "hm7", "hm8"
+        ]
         # Extract features and scale
         phase_data = phase_data[features]
         if training:
